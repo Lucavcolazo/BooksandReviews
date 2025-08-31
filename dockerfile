@@ -3,14 +3,12 @@ FROM node:18-alpine AS base
 
 # Instalar dependencias solo cuando sea necesario
 FROM base AS deps
-# Verificar https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine para entender por qué libc6-compat podría ser necesario.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-# Instalar dependencias basadas en el archivo package-lock.json preferido
-# https://docs.npmjs.com/cli/v7/commands/npm-ci
+# Instalar TODAS las dependencias (incluyendo devDependencies)
 COPY package.json package-lock.json* ./
-RUN npm ci --only=production
+RUN npm ci
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -19,9 +17,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
 # Next.js recolecta información completamente anónima sobre el uso general.
-# Aprende más aquí: https://nextjs.org/telemetry
 # Desactivar telemetry durante el build.
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN npm run build
 
@@ -29,16 +26,15 @@ RUN npm run build
 FROM base AS runner
 WORKDIR /app
 
-ENV NODE_ENV production
+ENV NODE_ENV=production
 # Desactivar telemetry durante el runtime.
-ENV NEXT_TELEMETRY_DISABLED 1
+ENV NEXT_TELEMETRY_DISABLED=1
 
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
 COPY --from=builder /app/public ./public
 
-# Configurar automáticamente el uso de un usuario no-root. Aprende más aquí: https://docs.docker.com/develop/dev-best-practices/userguide/#user
 # Copiar los archivos estáticos generados
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
@@ -47,11 +43,8 @@ USER nextjs
 
 EXPOSE 3000
 
-ENV PORT 3000
-# set hostname to localhost
-ENV HOSTNAME "0.0.0.0"
+ENV PORT=3000
+ENV HOSTNAME="0.0.0.0"
 
 # server.js is created by next build from the standalone output
-# https://nextjs.org/docs/pages/api-reference/next-config-js/output
 CMD ["node", "server.js"]
-    
