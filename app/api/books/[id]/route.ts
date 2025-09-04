@@ -16,7 +16,6 @@ export async function GET(
 
     // Hacer la petición a la Google Books API (sin API key por ahora)
     const apiUrl = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
-    console.log('Haciendo petición a Google Books API:', apiUrl);
     
     const response = await fetch(apiUrl);
 
@@ -57,27 +56,23 @@ export async function GET(
     // Transformar los datos a nuestro formato
     const book = {
       id: data.id,
-      title: data.volumeInfo?.title || 'Título no disponible',
-      authors: data.volumeInfo?.authors || ['Autor desconocido'],
-      description: data.volumeInfo?.description || 'Descripción no disponible',
-      publishedDate: data.volumeInfo?.publishedDate || 'Fecha no disponible',
-      pageCount: data.volumeInfo?.pageCount || 0,
+      title: data.volumeInfo?.title || 'Título desconocido',
+      authors: data.volumeInfo?.authors || [],
+      description: data.volumeInfo?.description,
+      publishedDate: data.volumeInfo?.publishedDate,
+      pageCount: data.volumeInfo?.pageCount,
       categories: data.volumeInfo?.categories || [],
-      averageRating: data.volumeInfo?.averageRating || 0,
-      ratingsCount: data.volumeInfo?.ratingsCount || 0,
-      language: data.volumeInfo?.language || 'es',
-      previewLink: data.volumeInfo?.previewLink || '',
-      infoLink: data.volumeInfo?.infoLink || '',
-      thumbnail: data.volumeInfo?.imageLinks?.thumbnail || '',
-      smallThumbnail: data.volumeInfo?.imageLinks?.smallThumbnail || '',
-      industryIdentifiers: data.volumeInfo?.industryIdentifiers || [],
-      publisher: data.volumeInfo?.publisher || 'Editorial no disponible',
-      publishedYear: data.volumeInfo?.publishedDate?.split('-')[0] || 'Año no disponible'
+      publisher: data.volumeInfo?.publisher,
+      language: data.volumeInfo?.language,
+      thumbnail: data.volumeInfo?.imageLinks?.thumbnail || data.volumeInfo?.imageLinks?.smallThumbnail,
+      previewLink: data.volumeInfo?.previewLink,
+      infoLink: data.volumeInfo?.infoLink,
+      canonicalVolumeLink: data.volumeInfo?.canonicalVolumeLink
     };
 
     return NextResponse.json(book);
   } catch (error) {
-    console.error('Error fetching book details:', error);
+    console.error('Error en API route:', error);
     return NextResponse.json(
       { error: 'Error interno del servidor' },
       { status: 500 }
