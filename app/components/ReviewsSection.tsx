@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { getAllReviews, incrementLikes, incrementDislikes } from '../actions/reviews';
 
 interface Review {
   id: string;
@@ -11,29 +12,43 @@ interface Review {
   rating: number;
   content: string;
   createdAt: string;
-  likes?: number;
-  dislikes?: number;
+  updatedAt: string;
+  userId: string;
+  userDisplayName: string;
+  userAvatar?: string;
+  isEdited: boolean;
+  isPublic: boolean;
+  stats: {
+    likes: number;
+    dislikes: number;
+    helpful: number;
+    reports: number;
+  };
+  tags?: string[];
+  spoilerWarning?: boolean;
 }
 
 export default function ReviewsSection() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const loadReviews = () => {
-    const savedReviews = localStorage.getItem('book_reviews_v1');
-    if (savedReviews) {
-      try {
-        setReviews(JSON.parse(savedReviews));
-      } catch (error) {
-        console.error('Error loading reviews:', error);
-      }
+  const loadReviews = async () => {
+    try {
+      const reviews = await getAllReviews();
+      setReviews(reviews);
+    } catch (error) {
+      console.error('Error loading reviews:', error);
     }
   };
 
   useEffect(() => {
-    // Load reviews from localStorage
-    loadReviews();
-    setLoading(false);
+    // Load reviews from MongoDB
+    const initializeReviews = async () => {
+      await loadReviews();
+      setLoading(false);
+    };
+    
+    initializeReviews();
 
     // Escuchar el evento de nueva reseña agregada
     const handleReviewAdded = () => {
@@ -69,32 +84,26 @@ export default function ReviewsSection() {
     );
   }
 
-  const handleLike = (reviewId: string) => {
-    const updatedReviews = reviews.map(review => {
-      if (review.id === reviewId) {
-        return {
-          ...review,
-          likes: (review.likes || 0) + 1
-        };
-      }
-      return review;
-    });
-    setReviews(updatedReviews);
-    localStorage.setItem('book_reviews_v1', JSON.stringify(updatedReviews));
+  const handleLike = async (reviewId: string) => {
+    try {
+      const updatedReview = await incrementLikes(reviewId);
+      setReviews(reviews.map(review => 
+        review.id === reviewId ? updatedReview : review
+      ));
+    } catch (error) {
+      console.error('Error incrementing likes:', error);
+    }
   };
 
-  const handleDislike = (reviewId: string) => {
-    const updatedReviews = reviews.map(review => {
-      if (review.id === reviewId) {
-        return {
-          ...review,
-          dislikes: (review.dislikes || 0) + 1
-        };
-      }
-      return review;
-    });
-    setReviews(updatedReviews);
-    localStorage.setItem('book_reviews_v1', JSON.stringify(updatedReviews));
+  const handleDislike = async (reviewId: string) => {
+    try {
+      const updatedReview = await incrementDislikes(reviewId);
+      setReviews(reviews.map(review => 
+        review.id === reviewId ? updatedReview : review
+      ));
+    } catch (error) {
+      console.error('Error incrementing dislikes:', error);
+    }
   };
 
   return (
@@ -128,7 +137,7 @@ export default function ReviewsSection() {
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5" />
                     </svg>
-                    <span className="text-sm font-medium">{review.likes || 0}</span>
+                    <span className="text-sm font-medium">{review.stats.likes}</span>
                   </button>
                   
                   <button
@@ -138,7 +147,7 @@ export default function ReviewsSection() {
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 14H5.236a2 2 0 01-1.789-2.894l3.5-7A2 2 0 018.736 3h4.018c.163 0 .326.02.485.06L17 4m-7 10v5a2 2 0 002 2h.095c.5 0 .905-.405.905-.905 0-.714.211-1.412.608-2.006L17 13V4m-7 10h2" />
                     </svg>
-                    <span className="text-sm font-medium">{review.dislikes || 0}</span>
+                    <span className="text-sm font-medium">{review.stats.dislikes}</span>
                   </button>
                 </div>
               </div>

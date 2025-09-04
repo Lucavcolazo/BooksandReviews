@@ -5,51 +5,81 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params;
-    console.log('API: Recibida petición para book ID:', id);
+    const { id: bookId } = await params;
     
-    if (!id) {
-      console.log('API: Error - ID no proporcionado');
-      return NextResponse.json({ error: 'ID is required' }, { status: 400 });
+    if (!bookId) {
+      return NextResponse.json(
+        { error: 'ID del libro es requerido' },
+        { status: 400 }
+      );
     }
 
-    const url = `https://www.googleapis.com/books/v1/volumes/${encodeURIComponent(id)}`;
-    console.log('API: Haciendo fetch a Google Books API:', url);
-    const res = await fetch(url, { cache: 'no-store' });
+    // Hacer la petición a la Google Books API (sin API key por ahora)
+    const apiUrl = `https://www.googleapis.com/books/v1/volumes/${bookId}`;
+    console.log('Haciendo petición a Google Books API:', apiUrl);
     
-    console.log('API: Google Books API response status:', res.status);
-    
-    if (!res.ok) {
-      console.log('API: Error - Google Books API no encontró el libro');
-      return NextResponse.json({ error: 'Book not found' }, { status: 404 });
+    const response = await fetch(apiUrl);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Error de Google Books API:', {
+        status: response.status,
+        statusText: response.statusText,
+        error: errorText
+      });
+      
+      if (response.status === 404) {
+        return NextResponse.json(
+          { error: 'Libro no encontrado' },
+          { status: 404 }
+        );
+      }
+      
+      if (response.status === 400) {
+        return NextResponse.json(
+          { error: 'Error en la petición a Google Books API', details: errorText },
+          { status: 400 }
+        );
+      }
+      
+      if (response.status === 403) {
+        return NextResponse.json(
+          { error: 'API key inválida o sin permisos' },
+          { status: 403 }
+        );
+      }
+      
+      throw new Error(`Error de la API: ${response.status} - ${errorText}`);
     }
 
-    const data = await res.json();
-    console.log('API: Datos recibidos de Google Books API:', { id: data.id, title: data.volumeInfo?.title });
-    
-    // Mapear los datos a nuestro formato
-    const info = data.volumeInfo || {};
-    const imageLinks = info.imageLinks || {};
-    
+    const data = await response.json();
+
+    // Transformar los datos a nuestro formato
     const book = {
       id: data.id,
-      title: info.title || 'Título desconocido',
-      authors: info.authors || [],
-      thumbnail: imageLinks.thumbnail || imageLinks.smallThumbnail || undefined,
-      description: info.description,
-      publishedDate: info.publishedDate,
-      pageCount: info.pageCount,
-      categories: info.categories || [],
-      publisher: info.publisher,
-      language: info.language,
+      title: data.volumeInfo?.title || 'Título no disponible',
+      authors: data.volumeInfo?.authors || ['Autor desconocido'],
+      description: data.volumeInfo?.description || 'Descripción no disponible',
+      publishedDate: data.volumeInfo?.publishedDate || 'Fecha no disponible',
+      pageCount: data.volumeInfo?.pageCount || 0,
+      categories: data.volumeInfo?.categories || [],
+      averageRating: data.volumeInfo?.averageRating || 0,
+      ratingsCount: data.volumeInfo?.ratingsCount || 0,
+      language: data.volumeInfo?.language || 'es',
+      previewLink: data.volumeInfo?.previewLink || '',
+      infoLink: data.volumeInfo?.infoLink || '',
+      thumbnail: data.volumeInfo?.imageLinks?.thumbnail || '',
+      smallThumbnail: data.volumeInfo?.imageLinks?.smallThumbnail || '',
+      industryIdentifiers: data.volumeInfo?.industryIdentifiers || [],
+      publisher: data.volumeInfo?.publisher || 'Editorial no disponible',
+      publishedYear: data.volumeInfo?.publishedDate?.split('-')[0] || 'Año no disponible'
     };
 
-    console.log('API: Retornando libro mapeado:', { id: book.id, title: book.title });
     return NextResponse.json(book);
   } catch (error) {
-    console.error('Error fetching book:', error);
+    console.error('Error fetching book details:', error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: 'Error interno del servidor' },
       { status: 500 }
     );
   }

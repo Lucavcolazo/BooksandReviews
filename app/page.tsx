@@ -4,6 +4,7 @@ import BookCard from './components/BookCard';
 import BookModal from './components/BookModal';
 import MainMenu from './components/MainMenu';
 import ReviewsSection from './components/ReviewsSection';
+import AuthButton from './components/AuthButton';
 
 async function getData(q: string | undefined) {
   const query = q?.trim() || '';
@@ -22,8 +23,13 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
     <div className="min-h-screen bg-amber-50">
       {/* Header */}
       <header className={`bg-amber-900 text-white transition-all duration-500 ${hasResults ? 'py-4' : 'py-16'}`}>
-        <div className="max-w-4xl mx-auto px-4 text-center">
-          <h1 className="text-4xl font-bold mb-8">Books & Reviews</h1>
+        <div className="max-w-6xl mx-auto px-4">
+          {/* Top Bar with Auth */}
+          <div className="flex justify-between items-center mb-8">
+            <div></div>
+            <h1 className="text-4xl font-bold">Books & Reviews</h1>
+            <AuthButton />
+          </div>
           
           {/* Navigation */}
           <nav className="flex justify-center gap-4 mb-8">

@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Toast from './Toast';
+import { createReview, getReviewByBookId } from '../actions/reviews';
+import { useAuth } from '@/lib/auth-context';
 
 interface Book {
   id: string;
@@ -24,11 +26,24 @@ interface Review {
   rating: number;
   content: string;
   createdAt: string;
-  likes?: number;
-  dislikes?: number;
+  updatedAt: string;
+  userId: string;
+  userDisplayName: string;
+  userAvatar?: string;
+  isEdited: boolean;
+  isPublic: boolean;
+  stats: {
+    likes: number;
+    dislikes: number;
+    helpful: number;
+    reports: number;
+  };
+  tags?: string[];
+  spoilerWarning?: boolean;
 }
 
 export default function BookModal() {
+  const { user, isAuthenticated } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [book, setBook] = useState<Book | null>(null);
   const [loading, setLoading] = useState(false);
@@ -67,14 +82,14 @@ export default function BookModal() {
         setBook(bookData);
         
         // Verificar si ya existe una reseña para este libro
-        const existingReviews = localStorage.getItem('book_reviews_v1');
-        if (existingReviews) {
-          const reviews = JSON.parse(existingReviews);
-          const existingReview = reviews.find((r: Review) => r.bookId === bookId);
+        try {
+          const existingReview = await getReviewByBookId(bookId);
           if (existingReview) {
             setUserReview(existingReview);
             setShowReviewForm(false);
           }
+        } catch (error) {
+          console.error('Error loading existing review:', error);
         }
       } catch (error) {
         console.error('BookModal: Error loading book:', error);
@@ -97,21 +112,25 @@ export default function BookModal() {
     if (!book || !rating || !review.trim()) return;
 
     try {
-      // Save to localStorage instead of API
-      const newReview = {
-        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+      // Verificar autenticación
+      if (!isAuthenticated || !user) {
+        setToastMessage('Debes iniciar sesión para escribir reseñas');
+        setToastType('error');
+        setShowToast(true);
+        return;
+      }
+
+      // Crear reseña usando Server Action
+      const newReview = await createReview({
         bookId: book.id,
         bookTitle: book.title,
         bookThumbnail: book.thumbnail,
         rating,
         content: review.trim(),
-        createdAt: new Date().toISOString()
-      };
-
-      const existingReviews = localStorage.getItem('book_reviews_v1');
-      const reviews = existingReviews ? JSON.parse(existingReviews) : [];
-      reviews.unshift(newReview);
-      localStorage.setItem('book_reviews_v1', JSON.stringify(reviews));
+        userId: user.id,
+        userDisplayName: user.displayName,
+        userAvatar: user.avatar
+      });
 
       // Disparar evento personalizado para notificar que se agregó una nueva reseña
       const event = new CustomEvent('reviewAdded', { detail: newReview });
@@ -128,6 +147,7 @@ export default function BookModal() {
       setRating(0);
       setReview('');
     } catch (error) {
+      console.error('Error creating review:', error);
       setToastMessage('Error al publicar la reseña');
       setToastType('error');
       setShowToast(true);
@@ -230,7 +250,23 @@ export default function BookModal() {
 
                 {/* User Review Section */}
                 <div className="border-t border-amber-200 pt-6">
-                  {userReview ? (
+                  {!isAuthenticated ? (
+                    <div className="text-center py-8">
+                      <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                        </svg>
+                      </div>
+                      <h3 className="text-lg font-semibold text-amber-900 mb-2">Inicia sesión para reseñar</h3>
+                      <p className="text-amber-700 mb-4">Necesitas una cuenta para escribir reseñas y calificar libros</p>
+                      <a
+                        href="/auth/login"
+                        className="inline-block bg-amber-900 text-white px-6 py-2 rounded-lg hover:bg-amber-800 transition-colors"
+                      >
+                        Iniciar Sesión
+                      </a>
+                    </div>
+                  ) : userReview ? (
                     <div>
                       <div className="flex justify-between items-center mb-4">
                         <h3 className="text-lg font-semibold text-amber-900">Tu Reseña</h3>
@@ -246,6 +282,9 @@ export default function BookModal() {
                         <div className="flex items-center gap-2 mb-2">
                           <div className="text-amber-500 font-semibold">{userReview.rating}★</div>
                           <span className="text-amber-600 text-sm">{new Date(userReview.createdAt).toLocaleDateString()}</span>
+                          {userReview.isEdited && (
+                            <span className="text-amber-500 text-xs">(editado)</span>
+                          )}
                         </div>
                         <p className="text-amber-800">{userReview.content}</p>
                       </div>
