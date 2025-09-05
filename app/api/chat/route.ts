@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
 const openai = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY,
+  apiKey: process.env.OPENROUTER_API_KEY || 'dummy-key-for-build',
   baseURL: 'https://openrouter.ai/api/v1',
   defaultHeaders: {
     'HTTP-Referer': 'http://localhost:3001', // Optional, for analytics
@@ -12,6 +12,13 @@ const openai = new OpenAI({
 
 export async function POST(request: NextRequest) {
   let messages, userPreferences;
+  
+  // Verificar que la API key esté disponible
+  if (!process.env.OPENROUTER_API_KEY || process.env.OPENROUTER_API_KEY === 'dummy-key-for-build') {
+    return NextResponse.json({
+      message: 'Servicio de chat no disponible temporalmente. Por favor, inténtalo más tarde.'
+    }, { status: 503 });
+  }
   
   try {
     const body = await request.json();
