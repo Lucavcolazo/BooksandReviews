@@ -5,6 +5,8 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --font-noto-sans: 'Noto Sans', sans-serif;
+  --font-space-grotesk: 'Space Grotesk', sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -17,7 +19,11 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-noto-sans);
+}
+
+.font-space-grotesk {
+  font-family: var(--font-space-grotesk);
 }
 
 /* Animaciones para el toast */

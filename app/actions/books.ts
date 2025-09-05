@@ -61,4 +61,30 @@ export async function getBookById(id: string): Promise<DetailedBook | null> {
   return mapVolumeToDetailed(data);
 }
 
+// Obtener libros recomendados basados en categorías
+export async function getRecommendedBooks(categories: string[] = [], limit: number = 8): Promise<SimpleBook[]> {
+  try {
+    if (categories.length === 0) {
+      // Si no hay categorías, buscar libros populares
+      const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=subject:fiction&maxResults=${limit}&orderBy=relevance`, { cache: 'no-store' });
+      if (!response.ok) return [];
+      
+      const data = await response.json();
+      return data.items?.map(mapVolumeToSimple) || [];
+    }
+    
+    // Buscar libros por las categorías favoritas
+    const searchQueries = categories.map(cat => `subject:${cat}`).join(' OR ');
+    const response = await fetch(`https://www.googleapis.com/books/v1/volumes?q=${encodeURIComponent(searchQueries)}&maxResults=${limit}&orderBy=relevance`, { cache: 'no-store' });
+    
+    if (!response.ok) return [];
+    
+    const data = await response.json();
+    return data.items?.map(mapVolumeToSimple) || [];
+  } catch (error) {
+    console.error('Error fetching recommended books:', error);
+    return [];
+  }
+}
+
 

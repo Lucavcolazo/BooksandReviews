@@ -118,7 +118,7 @@ export default function BookModal() {
     return () => {
       window.removeEventListener('openBookModal', handleBookClick);
     };
-  }, []);
+  }, [isAuthenticated, user]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleSubmitReview = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -218,27 +218,27 @@ export default function BookModal() {
 
   return (
     <>
-      <div role="dialog" className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-        <div className="bg-amber-50 rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+      <div role="dialog" className="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+        <div className="bg-slate-100 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto border border-slate-200">
           {/* Header */}
-          <div className="bg-amber-900 text-white p-6 rounded-t-lg">
+          <div className="bg-slate-800 text-slate-100 p-6 rounded-t-xl">
             <div className="flex justify-between items-start">
               <div className="flex-1">
                 {loading ? (
                   <div className="animate-pulse">
-                    <div className="h-8 bg-amber-700 rounded mb-2"></div>
-                    <div className="h-4 bg-amber-700 rounded w-2/3"></div>
+                    <div className="h-8 bg-slate-600 rounded mb-2"></div>
+                    <div className="h-4 bg-slate-600 rounded w-2/3"></div>
                   </div>
                 ) : (
                   <>
-                    <h1 className="text-2xl font-bold mb-2">{book?.title}</h1>
-                    <p className="text-amber-200">{book?.authors?.join(', ') || 'Autor desconocido'}</p>
+                    <h1 className="text-2xl font-bold mb-2 text-slate-100">{book?.title}</h1>
+                    <p className="text-slate-300">{book?.authors?.join(', ') || 'Autor Desconocido'}</p>
                   </>
                 )}
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="text-amber-200 hover:text-white transition-colors"
+                className="text-slate-300 hover:text-slate-100 transition-colors"
                 aria-label="close"
               >
                 <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -253,17 +253,17 @@ export default function BookModal() {
             {loading ? (
               <div className="animate-pulse space-y-4">
                 <div className="flex gap-6">
-                  <div className="w-32 h-48 bg-amber-200 rounded"></div>
+                  <div className="w-32 h-48 bg-slate-200 rounded"></div>
                   <div className="flex-1 space-y-3">
-                    <div className="h-4 bg-amber-200 rounded"></div>
-                    <div className="h-4 bg-amber-200 rounded w-3/4"></div>
-                    <div className="h-4 bg-amber-200 rounded w-1/2"></div>
+                    <div className="h-4 bg-slate-200 rounded"></div>
+                    <div className="h-4 bg-slate-200 rounded w-3/4"></div>
+                    <div className="h-4 bg-slate-200 rounded w-1/2"></div>
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <div className="h-4 bg-amber-200 rounded"></div>
-                  <div className="h-4 bg-amber-200 rounded"></div>
-                  <div className="h-4 bg-amber-200 rounded w-5/6"></div>
+                  <div className="h-4 bg-slate-200 rounded"></div>
+                  <div className="h-4 bg-slate-200 rounded"></div>
+                  <div className="h-4 bg-slate-200 rounded w-5/6"></div>
                 </div>
               </div>
             ) : book ? (
@@ -272,10 +272,10 @@ export default function BookModal() {
                 <div className="flex gap-6">
                   <div className="flex-shrink-0">
                     {book.thumbnail ? (
-                      <img src={book.thumbnail} alt={book.title} className="w-32 h-48 object-cover rounded border border-amber-200" />
+                      <img src={book.thumbnail} alt={book.title} className="w-32 h-48 object-cover rounded border border-slate-200" />
                     ) : (
-                      <div className="w-32 h-48 bg-amber-200 rounded flex items-center justify-center border border-amber-300">
-                        <svg data-testid="book-placeholder" className="w-12 h-12 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="w-32 h-48 bg-slate-200 rounded flex items-center justify-center border border-slate-300">
+                        <svg data-testid="book-placeholder" className="w-12 h-12 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                         </svg>
                       </div>
@@ -283,7 +283,7 @@ export default function BookModal() {
                   </div>
                   
                   <div className="flex-1 space-y-3">
-                    <div className="text-sm text-amber-800">
+                    <div className="text-sm text-slate-700">
                       <p><strong>Publicado:</strong> {book.publishedDate || 'N/D'}</p>
                       <p><strong>Páginas:</strong> {book.pageCount || 'N/D'}</p>
                       <p><strong>Editorial:</strong> {book.publisher || 'N/D'}</p>
@@ -300,7 +300,7 @@ export default function BookModal() {
                           className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
                             isInFavorites
                               ? 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-300'
-                              : 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300'
+                              : 'bg-slate-200 text-slate-700 hover:bg-slate-300 border border-slate-300'
                           } ${favoritesLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
                         >
                           {favoritesLoading ? (
@@ -331,8 +331,8 @@ export default function BookModal() {
                 {/* Description */}
                 {book.description && (
                   <div>
-                    <h3 className="text-lg font-semibold text-amber-900 mb-2">Descripción</h3>
-                    <div className="text-amber-800 leading-relaxed max-h-32 overflow-y-auto">
+                    <h3 className="text-lg font-semibold text-slate-800 mb-2">Descripción</h3>
+                    <div className="text-slate-700 leading-relaxed max-h-32 overflow-y-auto bg-slate-50 p-4 rounded-lg border border-slate-200">
                       <p className="whitespace-pre-wrap text-sm">
                         {book.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()}
                       </p>
@@ -341,19 +341,19 @@ export default function BookModal() {
                 )}
 
                 {/* User Review Section */}
-                <div className="border-t border-amber-200 pt-6">
+                <div className="border-t border-slate-200 pt-6">
                   {!isAuthenticated ? (
                     <div className="text-center py-8">
-                      <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg className="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <div className="bg-slate-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-slate-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                         </svg>
                       </div>
-                      <h3 className="text-lg font-semibold text-amber-900 mb-2">Inicia sesión para reseñar</h3>
-                      <p className="text-amber-700 mb-4">Necesitas una cuenta para escribir reseñas y calificar libros</p>
+                      <h3 className="text-lg font-semibold text-slate-800 mb-2">Inicia sesión para reseñar</h3>
+                      <p className="text-slate-600 mb-4">Necesitas una cuenta para escribir reseñas y calificar libros</p>
                       <a
                         href="/auth/login"
-                        className="inline-block bg-amber-900 text-white px-6 py-2 rounded-lg hover:bg-amber-800 transition-colors"
+                        className="inline-block bg-slate-800 text-slate-100 px-6 py-2 rounded-lg hover:bg-slate-700 transition-colors"
                       >
                         Iniciar Sesión
                       </a>
@@ -361,33 +361,33 @@ export default function BookModal() {
                   ) : userReview ? (
                     <div>
                       <div className="flex justify-between items-center mb-4">
-                        <h3 className="text-lg font-semibold text-amber-900">Tu Reseña</h3>
+                        <h3 className="text-lg font-semibold text-slate-800">Tu Reseña</h3>
                         <button
                           onClick={handleEditReview}
-                          className="text-amber-700 hover:text-amber-900 text-sm font-medium"
+                          className="text-slate-600 hover:text-slate-800 text-sm font-medium"
                         >
                           Editar
                         </button>
                       </div>
                       
-                      <div className="bg-white border border-amber-200 rounded-lg p-4">
+                      <div className="bg-slate-50 border border-slate-200 rounded-lg p-4">
                         <div className="flex items-center gap-2 mb-2">
-                          <div className="text-amber-500 font-semibold">{userReview.rating}★</div>
-                          <span className="text-amber-600 text-sm">{new Date(userReview.createdAt).toLocaleDateString()}</span>
+                          <div className="text-yellow-500 font-semibold">{userReview.rating}★</div>
+                          <span className="text-slate-600 text-sm">{new Date(userReview.createdAt).toLocaleDateString()}</span>
                           {userReview.isEdited && (
-                            <span className="text-amber-500 text-xs">(editado)</span>
+                            <span className="text-slate-500 text-xs">(editado)</span>
                           )}
                         </div>
-                        <p className="text-amber-800">{userReview.content}</p>
+                        <p className="text-slate-700">{userReview.content}</p>
                       </div>
                     </div>
                   ) : (
                     <>
-                      <h3 className="text-lg font-semibold text-amber-900 mb-4">Deja tu reseña</h3>
+                      <h3 className="text-lg font-semibold text-slate-800 mb-4">Deja tu reseña</h3>
                       
                       <form onSubmit={handleSubmitReview} className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium text-amber-800 mb-2">Calificación</label>
+                          <label className="block text-sm font-medium text-slate-700 mb-2">Calificación</label>
                           <div className="flex gap-1">
                             {[1, 2, 3, 4, 5].map((star) => (
                               <button
@@ -395,7 +395,7 @@ export default function BookModal() {
                                 type="button"
                                 onClick={() => setRating(star)}
                                 className={`text-2xl transition-colors ${
-                                  star <= rating ? 'text-amber-500' : 'text-amber-300 hover:text-amber-400'
+                                  star <= rating ? 'text-yellow-500' : 'text-slate-300 hover:text-yellow-400'
                                 }`}
                               >
                                 ★
@@ -405,12 +405,12 @@ export default function BookModal() {
                         </div>
                         
                         <div>
-                          <label className="block text-sm font-medium text-amber-800 mb-2">Tu reseña</label>
+                          <label className="block text-sm font-medium text-slate-700 mb-2">Tu reseña</label>
                           <textarea 
                             value={review}
                             onChange={(e) => setReview(e.target.value)}
                             rows={4} 
-                            className="w-full px-3 py-2 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-amber-900"
+                            className="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-slate-500 focus:border-slate-500 bg-white text-slate-800"
                             placeholder="Comparte tu opinión sobre este libro..."
                             required
                           />
@@ -419,14 +419,14 @@ export default function BookModal() {
                         <div className="flex gap-3">
                           <button 
                             type="submit" 
-                            className="bg-amber-900 text-white px-6 py-2 rounded-lg hover:bg-amber-800 transition-colors"
+                            className="bg-slate-800 text-slate-100 px-6 py-2 rounded-lg hover:bg-slate-700 transition-colors"
                           >
                             Publicar Reseña
                           </button>
                           <button 
                             type="button" 
                             onClick={() => setIsOpen(false)}
-                            className="bg-amber-200 text-amber-900 px-6 py-2 rounded-lg hover:bg-amber-300 transition-colors"
+                            className="bg-slate-200 text-slate-800 px-6 py-2 rounded-lg hover:bg-slate-300 transition-colors"
                           >
                             Cerrar
                           </button>
@@ -437,7 +437,7 @@ export default function BookModal() {
                 </div>
               </>
             ) : (
-              <div className="text-center text-amber-800">
+              <div className="text-center text-slate-700">
                 <p>Error al cargar la información del libro</p>
               </div>
             )}

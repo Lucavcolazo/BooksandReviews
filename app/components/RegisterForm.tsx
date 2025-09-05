@@ -132,22 +132,22 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
 
   return (
     <>
-      <div className="bg-amber-50 rounded-lg shadow-xl max-w-md w-full mx-auto p-8">
+      <div className="bg-slate-100/10 backdrop-blur-sm rounded-lg border border-slate-200/30 max-w-md w-full mx-auto p-8">
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="bg-amber-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
-            <svg className="w-8 h-8 text-amber-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="bg-slate-100/20 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg className="w-8 h-8 text-slate-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-amber-900 mb-2">¡Únete a la comunidad!</h2>
-          <p className="text-amber-700">Crea tu cuenta y comienza a reseñar libros</p>
+          <h2 className="text-2xl font-bold text-slate-100 mb-2">¡Únete a la comunidad!</h2>
+          <p className="text-slate-300">Crea tu cuenta y comienza a reseñar libros</p>
         </div>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label htmlFor="email" className="block text-sm font-medium text-amber-800 mb-2">
+            <label htmlFor="email" className="block text-sm font-medium text-slate-200 mb-2">
               Email
             </label>
             <input
@@ -156,8 +156,8 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
               name="email"
               value={formData.email}
               onChange={handleInputChange}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-amber-900 placeholder-amber-500 ${
-                errors.email ? 'border-red-500' : 'border-amber-300'
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-slate-300/50 focus:border-slate-300/50 bg-slate-100/10 backdrop-blur-sm text-slate-100 placeholder-slate-400 ${
+                errors.email ? 'border-red-500' : 'border-slate-200/50'
               }`}
               placeholder="tu@email.com"
               disabled={loading}
@@ -166,7 +166,7 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
           </div>
 
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-amber-800 mb-2">
+            <label htmlFor="username" className="block text-sm font-medium text-slate-200 mb-2">
               Nombre de usuario
             </label>
             <input
@@ -175,8 +175,8 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
               name="username"
               value={formData.username}
               onChange={handleInputChange}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-amber-900 placeholder-amber-500 ${
-                errors.username ? 'border-red-500' : 'border-amber-300'
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-slate-300/50 focus:border-slate-300/50 bg-slate-100/10 backdrop-blur-sm text-slate-100 placeholder-slate-400 ${
+                errors.username ? 'border-red-500' : 'border-slate-200/50'
               }`}
               placeholder="tu_usuario"
               disabled={loading}
@@ -185,7 +185,7 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
           </div>
 
           <div>
-            <label htmlFor="displayName" className="block text-sm font-medium text-amber-800 mb-2">
+            <label htmlFor="displayName" className="block text-sm font-medium text-slate-200 mb-2">
               Nombre para mostrar
             </label>
             <input
@@ -194,8 +194,8 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
               name="displayName"
               value={formData.displayName}
               onChange={handleInputChange}
-              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-amber-900 placeholder-amber-500 ${
-                errors.displayName ? 'border-red-500' : 'border-amber-300'
+              className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-slate-300/50 focus:border-slate-300/50 bg-slate-100/10 backdrop-blur-sm text-slate-100 placeholder-slate-400 ${
+                errors.displayName ? 'border-red-500' : 'border-slate-200/50'
               }`}
               placeholder="Tu nombre"
               disabled={loading}
@@ -204,7 +204,7 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
           </div>
 
           <div>
-            <label htmlFor="password" className="block text-sm font-medium text-amber-800 mb-2">
+            <label htmlFor="password" className="block text-sm font-medium text-slate-200 mb-2">
               Contraseña
             </label>
             <div className="relative">
@@ -214,8 +214,8 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-amber-900 placeholder-amber-500 ${
-                  errors.password ? 'border-red-500' : 'border-amber-300'
+                className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-slate-300/50 focus:border-slate-300/50 bg-slate-100/10 backdrop-blur-sm text-slate-100 placeholder-slate-400 ${
+                  errors.password ? 'border-red-500' : 'border-slate-200/50'
                 }`}
                 placeholder="Mínimo 8 caracteres"
                 disabled={loading}
@@ -223,7 +223,7 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-500 hover:text-amber-700"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-200"
                 disabled={loading}
               >
                 {showPassword ? (
@@ -242,7 +242,7 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
           </div>
 
           <div>
-            <label htmlFor="confirmPassword" className="block text-sm font-medium text-amber-800 mb-2">
+            <label htmlFor="confirmPassword" className="block text-sm font-medium text-slate-200 mb-2">
               Confirmar contraseña
             </label>
             <div className="relative">
@@ -252,8 +252,8 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleInputChange}
-                className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-amber-900 placeholder-amber-500 ${
-                  errors.confirmPassword ? 'border-red-500' : 'border-amber-300'
+                className={`w-full px-4 py-3 pr-12 border rounded-lg focus:ring-2 focus:ring-slate-300/50 focus:border-slate-300/50 bg-slate-100/10 backdrop-blur-sm text-slate-100 placeholder-slate-400 ${
+                  errors.confirmPassword ? 'border-red-500' : 'border-slate-200/50'
                 }`}
                 placeholder="Repite tu contraseña"
                 disabled={loading}
@@ -261,7 +261,7 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
               <button
                 type="button"
                 onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-amber-500 hover:text-amber-700"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-200"
                 disabled={loading}
               >
                 {showConfirmPassword ? (
@@ -282,7 +282,7 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-amber-900 text-white py-3 px-4 rounded-lg hover:bg-amber-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-6"
+            className="w-full bg-slate-100/20 hover:bg-slate-100/30 text-slate-100 py-3 px-4 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium mt-6 backdrop-blur-sm border border-slate-200/30"
           >
             {loading ? (
               <div className="flex items-center justify-center">
@@ -300,12 +300,12 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
 
         {/* Footer */}
         <div className="mt-6 text-center">
-          <p className="text-amber-700 text-sm">
+          <p className="text-slate-300 text-sm">
             ¿Ya tienes cuenta?{' '}
             {onSwitchToLogin ? (
               <button
                 onClick={onSwitchToLogin}
-                className="text-amber-900 font-medium hover:underline"
+                className="text-slate-100 font-medium hover:underline"
                 disabled={loading}
               >
                 Inicia sesión aquí
@@ -313,7 +313,7 @@ export default function RegisterForm({ onSuccess, onSwitchToLogin }: RegisterFor
             ) : (
               <Link
                 href="/auth/login"
-                className="text-amber-900 font-medium hover:underline"
+                className="text-slate-100 font-medium hover:underline"
               >
                 Inicia sesión aquí
               </Link>

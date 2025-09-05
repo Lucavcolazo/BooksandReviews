@@ -398,3 +398,27 @@ export async function isBookInFavorites(userId: string, bookId: string): Promise
     return false;
   }
 }
+
+// Obtener categorías de los libros favoritos del usuario para recomendaciones
+export async function getFavoriteCategories(userId: string): Promise<string[]> {
+  try {
+    const favoritesList = await getOrCreateFavoritesList(userId);
+    
+    if (favoritesList.books.length === 0) {
+      return [];
+    }
+    
+    // Por ahora retornamos categorías genéricas basadas en los favoritos
+    // En una implementación real, esto vendría de la API de Google Books
+    const categories = [
+      'Fiction', 'Non-Fiction', 'Science Fiction', 'Fantasy', 'Mystery', 
+      'Romance', 'Thriller', 'Biography', 'History', 'Self-Help'
+    ];
+    
+    // Retornar algunas categorías aleatorias para simular recomendaciones
+    return categories.slice(0, Math.min(3, favoritesList.books.length));
+  } catch (error) {
+    console.error('Error getting favorite categories:', error);
+    return [];
+  }
+}
