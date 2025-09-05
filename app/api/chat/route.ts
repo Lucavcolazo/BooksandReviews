@@ -1,14 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENROUTER_API_KEY || 'dummy-key-for-build',
-  baseURL: 'https://openrouter.ai/api/v1',
-  defaultHeaders: {
-    'HTTP-Referer': 'http://localhost:3001', // Optional, for analytics
-    'X-Title': 'Books and Reviews Chat', // Optional, for analytics
-  },
-});
+// Inicializar OpenAI solo cuando sea necesario
+function getOpenAIClient() {
+  return new OpenAI({
+    apiKey: process.env.OPENROUTER_API_KEY || 'dummy-key-for-build',
+    baseURL: 'https://openrouter.ai/api/v1',
+    defaultHeaders: {
+      'HTTP-Referer': 'http://localhost:3001', // Optional, for analytics
+      'X-Title': 'Books and Reviews Chat', // Optional, for analytics
+    },
+  });
+}
 
 export async function POST(request: NextRequest) {
   let messages, userPreferences;
@@ -61,6 +64,7 @@ Sé útil, amigable y da respuestas completas.`
       maxTokens: 2000
     });
 
+    const openai = getOpenAIClient();
     const response = await openai.chat.completions.create({
       model: selectedModel,
       messages: [systemMessage, ...messages],
