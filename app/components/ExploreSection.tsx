@@ -1,29 +1,25 @@
-import { getCurrentUser } from '../actions/auth';
-import { getFavoriteCategories } from '../actions/booklists';
 import { getRecommendedBooks } from '../actions/books';
-import BookCard from './BookCard';
 import ExploreWithChat from './ExploreWithChat';
 
 export default async function ExploreSection() {
-  // Obtener información del usuario para recomendaciones personalizadas
-  const currentUser = await getCurrentUser();
-  const userId = currentUser.success ? currentUser.user?.id : undefined;
+  // Usar categorías por defecto para evitar problemas durante el build
+  const categories = [
+    'Fiction', 'Non-Fiction', 'Science Fiction', 'Fantasy', 'Mystery', 
+    'Romance', 'Thriller', 'Biography', 'History', 'Self-Help'
+  ];
   
-  let categories: string[] = [];
   let recommendedBooks: any[] = [];
   
-  if (userId) {
-    try {
-      categories = await getFavoriteCategories(userId);
-      recommendedBooks = await getRecommendedBooks(categories, 12);
-    } catch (error) {
-      console.error('Error loading recommendations:', error);
-    }
+  // Obtener libros recomendados por defecto
+  try {
+    recommendedBooks = await getRecommendedBooks(categories.slice(0, 3), 12);
+  } catch (error) {
+    console.error('Error loading default recommendations:', error);
   }
 
   return <ExploreWithChat 
     categories={categories} 
     recommendedBooks={recommendedBooks} 
-    userId={userId} 
+    userId={undefined} 
   />;
 }
