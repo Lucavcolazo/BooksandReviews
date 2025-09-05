@@ -56,13 +56,24 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
           {/* Search Form - Only show when in search view */}
           {currentView === 'search' && (
             <form action="/?view=search" className="max-w-2xl mx-auto">
-              <input
-                type="text"
-                name="q"
-                defaultValue={params?.q || ''}
-                placeholder="Busca por título, autor o ISBN..."
-                className="w-full px-6 py-4 rounded-lg text-white text-lg bg-amber-800/30 border-2 border-amber-200 placeholder-amber-200/70 focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-200"
-              />
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  name="q"
+                  defaultValue={params?.q || ''}
+                  placeholder="Busca por título, autor o ISBN..."
+                  className="flex-1 px-6 py-4 rounded-lg text-white text-lg bg-amber-800/30 border-2 border-amber-200 placeholder-amber-200/70 focus:outline-none focus:ring-2 focus:ring-amber-200 focus:border-amber-200"
+                />
+                <button
+                  type="submit"
+                  className="px-6 py-4 bg-amber-700 hover:bg-amber-600 text-white rounded-lg transition-colors flex items-center gap-2"
+                >
+                  <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                  <span className="hidden sm:inline">Buscar</span>
+                </button>
+              </div>
             </form>
           )}
         </div>

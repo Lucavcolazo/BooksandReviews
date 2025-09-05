@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { getCurrentUser } from '@/app/actions/auth';
 import { getAllReviews } from '@/app/actions/reviews';
 import CompactNavbar from '@/app/components/CompactNavbar';
+import FavoritesSection from '@/app/components/FavoritesSection';
 
 // Forzar renderizado dinámico
 export const dynamic = 'force-dynamic';
@@ -53,7 +54,10 @@ export default async function ProfilePage() {
       </div>
 
       {/* Contenido */}
-      <main className="max-w-4xl mx-auto px-4 py-8">
+      <main className="max-w-4xl mx-auto px-4 py-8 space-y-8">
+        {/* Mis Favoritos */}
+        <FavoritesSection userId={user.id} />
+
         {/* Mis Reseñas */}
         <div className="bg-white rounded-lg border border-amber-200 p-6">
           <h2 className="text-2xl font-bold text-amber-900 mb-6">Mis Reseñas</h2>

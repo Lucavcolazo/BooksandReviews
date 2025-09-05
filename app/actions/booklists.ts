@@ -287,3 +287,114 @@ export async function isBookInList(userId: string, bookId: string, listType?: Li
     throw new Error('Error al verificar si el libro está en la lista');
   }
 }
+
+// Función helper para serializar BookList (remover _id de MongoDB)
+function serializeBookList(bookList: any): BookList {
+  return {
+    id: bookList.id,
+    userId: bookList.userId,
+    name: bookList.name,
+    description: bookList.description,
+    type: bookList.type,
+    isPublic: bookList.isPublic,
+    isDefault: bookList.isDefault,
+    createdAt: bookList.createdAt,
+    updatedAt: bookList.updatedAt,
+    bookCount: bookList.bookCount,
+    books: bookList.books
+  };
+}
+
+// Crear o obtener lista de favoritos del usuario
+export async function getOrCreateFavoritesList(userId: string): Promise<BookList> {
+  try {
+    const db = await getDatabase();
+    const bookListsCollection = db.collection<BookList>('booklists');
+    
+    // Buscar lista de favoritos existente
+    let favoritesList = await bookListsCollection.findOne({ 
+      userId, 
+      type: 'favorites' 
+    });
+    
+    // Si no existe, crear una nueva
+    if (!favoritesList) {
+      const newFavoritesList: Omit<BookList, '_id'> = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        userId,
+        name: 'Favoritos',
+        description: 'Mis libros favoritos',
+        type: 'favorites',
+        isPublic: false,
+        isDefault: true,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+        bookCount: 0,
+        books: []
+      };
+
+      const result = await bookListsCollection.insertOne(newFavoritesList as BookList);
+      favoritesList = { ...newFavoritesList, _id: result.insertedId } as BookList;
+    }
+    
+    return serializeBookList(favoritesList);
+  } catch (error) {
+    console.error('Error getting or creating favorites list:', error);
+    throw new Error('Error al obtener o crear la lista de favoritos');
+  }
+}
+
+// Agregar libro a favoritos
+export async function addToFavorites(userId: string, bookData: AddBookToListData): Promise<{ success: boolean, message: string }> {
+  try {
+    const favoritesList = await getOrCreateFavoritesList(userId);
+    
+    // Verificar si el libro ya está en favoritos
+    const isAlreadyInFavorites = favoritesList.books.some(book => book.bookId === bookData.bookId);
+    
+    if (isAlreadyInFavorites) {
+      return { success: false, message: 'El libro ya está en tus favoritos' };
+    }
+    
+    // Agregar el libro a la lista de favoritos
+    await addBookToList(favoritesList.id, bookData);
+    
+    return { success: true, message: 'Libro agregado a favoritos' };
+  } catch (error) {
+    console.error('Error adding to favorites:', error);
+    throw new Error('Error al agregar el libro a favoritos');
+  }
+}
+
+// Remover libro de favoritos
+export async function removeFromFavorites(userId: string, bookId: string): Promise<{ success: boolean, message: string }> {
+  try {
+    const favoritesList = await getOrCreateFavoritesList(userId);
+    
+    // Verificar si el libro está en favoritos
+    const isInFavorites = favoritesList.books.some(book => book.bookId === bookId);
+    
+    if (!isInFavorites) {
+      return { success: false, message: 'El libro no está en tus favoritos' };
+    }
+    
+    // Remover el libro de la lista de favoritos
+    await removeBookFromList(favoritesList.id, bookId);
+    
+    return { success: true, message: 'Libro removido de favoritos' };
+  } catch (error) {
+    console.error('Error removing from favorites:', error);
+    throw new Error('Error al remover el libro de favoritos');
+  }
+}
+
+// Verificar si un libro está en favoritos
+export async function isBookInFavorites(userId: string, bookId: string): Promise<boolean> {
+  try {
+    const result = await isBookInList(userId, bookId, 'favorites');
+    return result.isInList;
+  } catch (error) {
+    console.error('Error checking if book is in favorites:', error);
+    return false;
+  }
+}

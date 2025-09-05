@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import Toast from './Toast';
 import { createReview, getReviewByBookId } from '../actions/reviews';
+import { addToFavorites, removeFromFavorites, isBookInFavorites } from '../actions/booklists';
 import { useAuth } from '@/lib/auth-context';
 
 interface Book {
@@ -54,6 +55,8 @@ export default function BookModal() {
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
   const [userReview, setUserReview] = useState<Review | null>(null);
   const [showReviewForm, setShowReviewForm] = useState(true);
+  const [isInFavorites, setIsInFavorites] = useState(false);
+  const [favoritesLoading, setFavoritesLoading] = useState(false);
 
   useEffect(() => {
     const handleBookClick = async (event: Event) => {
@@ -90,6 +93,16 @@ export default function BookModal() {
           }
         } catch (error) {
           console.error('Error loading existing review:', error);
+        }
+
+        // Verificar si el libro está en favoritos (solo si el usuario está autenticado)
+        if (isAuthenticated && user) {
+          try {
+            const inFavorites = await isBookInFavorites(user.id, bookId);
+            setIsInFavorites(inFavorites);
+          } catch (error) {
+            console.error('Error checking favorites:', error);
+          }
         }
       } catch (error) {
         console.error('BookModal: Error loading book:', error);
@@ -159,6 +172,46 @@ export default function BookModal() {
     setUserReview(null);
     setRating(0);
     setReview('');
+  };
+
+  const handleToggleFavorites = async () => {
+    if (!book || !user || favoritesLoading) return;
+
+    setFavoritesLoading(true);
+    try {
+      let result;
+      
+      if (isInFavorites) {
+        // Remover de favoritos
+        result = await removeFromFavorites(user.id, book.id);
+      } else {
+        // Agregar a favoritos
+        result = await addToFavorites(user.id, {
+          bookId: book.id,
+          bookTitle: book.title,
+          bookThumbnail: book.thumbnail,
+          bookAuthors: book.authors || []
+        });
+      }
+
+      if (result.success) {
+        setIsInFavorites(!isInFavorites);
+        setToastMessage(result.message);
+        setToastType('success');
+        setShowToast(true);
+      } else {
+        setToastMessage(result.message);
+        setToastType('error');
+        setShowToast(true);
+      }
+    } catch (error) {
+      console.error('Error toggling favorites:', error);
+      setToastMessage('Error al actualizar favoritos');
+      setToastType('error');
+      setShowToast(true);
+    } finally {
+      setFavoritesLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -237,6 +290,41 @@ export default function BookModal() {
                       <p><strong>Idioma:</strong> {book.language || 'N/D'}</p>
                       <p><strong>Categorías:</strong> {book.categories?.join(', ') || 'N/D'}</p>
                     </div>
+                    
+                    {/* Botón de Favoritos */}
+                    {isAuthenticated && (
+                      <div className="pt-3">
+                        <button
+                          onClick={handleToggleFavorites}
+                          disabled={favoritesLoading}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                            isInFavorites
+                              ? 'bg-red-100 text-red-700 hover:bg-red-200 border border-red-300'
+                              : 'bg-amber-100 text-amber-700 hover:bg-amber-200 border border-amber-300'
+                          } ${favoritesLoading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        >
+                          {favoritesLoading ? (
+                            <div className="w-4 h-4 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                          ) : (
+                            <svg 
+                              className={`w-4 h-4 ${isInFavorites ? 'fill-current' : ''}`} 
+                              viewBox="0 0 24 24" 
+                              stroke="currentColor"
+                            >
+                              <path 
+                                strokeLinecap="round" 
+                                strokeLinejoin="round" 
+                                strokeWidth={2} 
+                                d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" 
+                              />
+                            </svg>
+                          )}
+                          <span className="text-sm font-medium">
+                            {isInFavorites ? 'En Favoritos' : 'Agregar a Favoritos'}
+                          </span>
+                        </button>
+                      </div>
+                    )}
                   </div>
                 </div>
 
@@ -244,7 +332,11 @@ export default function BookModal() {
                 {book.description && (
                   <div>
                     <h3 className="text-lg font-semibold text-amber-900 mb-2">Descripción</h3>
-                    <p className="text-amber-800 leading-relaxed">{book.description}</p>
+                    <div className="text-amber-800 leading-relaxed max-h-32 overflow-y-auto">
+                      <p className="whitespace-pre-wrap text-sm">
+                        {book.description.replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim()}
+                      </p>
+                    </div>
                   </div>
                 )}
 
