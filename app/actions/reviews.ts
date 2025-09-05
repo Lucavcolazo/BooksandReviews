@@ -40,11 +40,33 @@ export async function createReview(data: CreateReviewData): Promise<Review> {
       throw new Error('Error al crear la reseña');
     }
 
-    return { ...newReview, _id: result.insertedId } as Review;
+    return serializeReview({ ...newReview, _id: result.insertedId });
   } catch (error) {
     console.error('Error creating review:', error);
     throw new Error('Error al crear la reseña');
   }
+}
+
+// Función helper para convertir objetos MongoDB a objetos planos
+function serializeReview(review: any): Review {
+  return {
+    id: review.id,
+    bookId: review.bookId,
+    bookTitle: review.bookTitle,
+    bookThumbnail: review.bookThumbnail,
+    rating: review.rating,
+    content: review.content,
+    createdAt: review.createdAt,
+    updatedAt: review.updatedAt,
+    userId: review.userId,
+    userDisplayName: review.userDisplayName,
+    userAvatar: review.userAvatar,
+    isEdited: review.isEdited,
+    isPublic: review.isPublic,
+    stats: review.stats,
+    tags: review.tags,
+    spoilerWarning: review.spoilerWarning
+  };
 }
 
 // Obtener todas las reseñas
@@ -58,7 +80,8 @@ export async function getAllReviews(): Promise<Review[]> {
       .sort({ createdAt: -1 })
       .toArray();
     
-    return reviews;
+    // Convertir objetos MongoDB a objetos planos
+    return reviews.map(serializeReview);
   } catch (error) {
     console.error('Error fetching reviews:', error);
     throw new Error('Error al obtener las reseñas');
@@ -72,7 +95,7 @@ export async function getReviewByBookId(bookId: string): Promise<Review | null> 
     const reviewsCollection = db.collection<Review>('reviews');
     
     const review = await reviewsCollection.findOne({ bookId });
-    return review;
+    return review ? serializeReview(review) : null;
   } catch (error) {
     console.error('Error fetching review by book ID:', error);
     throw new Error('Error al obtener la reseña');
@@ -105,7 +128,7 @@ export async function updateReview(reviewId: string, data: UpdateReviewData): Pr
       throw new Error('Reseña no encontrada');
     }
 
-    return result;
+    return serializeReview(result);
   } catch (error) {
     console.error('Error updating review:', error);
     throw new Error('Error al actualizar la reseña');
@@ -142,7 +165,7 @@ export async function incrementLikes(reviewId: string): Promise<Review> {
       throw new Error('Reseña no encontrada');
     }
 
-    return result;
+    return serializeReview(result);
   } catch (error) {
     console.error('Error incrementing likes:', error);
     throw new Error('Error al actualizar los likes');
@@ -165,7 +188,7 @@ export async function incrementDislikes(reviewId: string): Promise<Review> {
       throw new Error('Reseña no encontrada');
     }
 
-    return result;
+    return serializeReview(result);
   } catch (error) {
     console.error('Error incrementing dislikes:', error);
     throw new Error('Error al actualizar los dislikes');

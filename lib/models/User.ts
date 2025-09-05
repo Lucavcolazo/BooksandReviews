@@ -14,23 +14,6 @@ export interface User {
   isActive: boolean;
   emailVerified: boolean; // Para futuras funcionalidades de verificación
   lastLogin?: string; // Último inicio de sesión
-  preferences: {
-    theme: 'light' | 'dark' | 'auto';
-    language: string;
-    notifications: {
-      email: boolean;
-      push: boolean;
-      newReviews: boolean;
-      likes: boolean;
-    };
-  };
-  stats: {
-    totalReviews: number;
-    totalLikes: number;
-    totalDislikes: number;
-    booksRead: number;
-    booksFavorited: number;
-  };
 }
 
 export interface CreateUserData {
@@ -46,13 +29,4 @@ export interface UpdateUserData {
   displayName?: string;
   avatar?: string;
   bio?: string;
-  preferences?: Partial<User['preferences']>;
-}
-
-export interface UserStats {
-  totalReviews: number;
-  totalLikes: number;
-  totalDislikes: number;
-  booksRead: number;
-  booksFavorited: number;
 }

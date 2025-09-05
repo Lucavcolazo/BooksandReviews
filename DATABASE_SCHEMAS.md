@@ -64,7 +64,7 @@ interface Review {
   userAvatar?: string;           // Avatar del usuario
   isEdited: boolean;             // Si la reseña fue editada
   isPublic: boolean;             // Si la reseña es pública
-  stats: {                       // Estadísticas de la reseña
+  stats: {                       // ísticas de la reseña
     likes: number;
     dislikes: number;
     helpful: number;             // Reseñas marcadas como útiles

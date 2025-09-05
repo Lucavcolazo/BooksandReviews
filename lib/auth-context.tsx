@@ -11,23 +11,6 @@ interface User {
   avatar?: string;
   bio?: string;
   createdAt: string;
-  stats: {
-    totalReviews: number;
-    totalLikes: number;
-    totalDislikes: number;
-    booksRead: number;
-    booksFavorited: number;
-  };
-  preferences: {
-    theme: 'light' | 'dark' | 'auto';
-    language: string;
-    notifications: {
-      email: boolean;
-      push: boolean;
-      newReviews: boolean;
-      likes: boolean;
-    };
-  };
 }
 
 interface AuthContextType {

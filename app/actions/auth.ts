@@ -69,24 +69,7 @@ export async function registerUser(data: CreateUserData): Promise<AuthResponse> 
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       isActive: true,
-      emailVerified: false,
-      preferences: {
-        theme: 'light',
-        language: 'es',
-        notifications: {
-          email: true,
-          push: true,
-          newReviews: true,
-          likes: true
-        }
-      },
-      stats: {
-        totalReviews: 0,
-        totalLikes: 0,
-        totalDislikes: 0,
-        booksRead: 0,
-        booksFavorited: 0
-      }
+      emailVerified: false
     };
 
     const result = await usersCollection.insertOne(newUser as User);
@@ -250,9 +233,7 @@ export async function getCurrentUser(): Promise<{ success: boolean; user?: any; 
         displayName: user.displayName,
         avatar: user.avatar,
         bio: user.bio,
-        createdAt: user.createdAt,
-        stats: user.stats,
-        preferences: user.preferences
+        createdAt: user.createdAt
       }
     };
   } catch (error) {

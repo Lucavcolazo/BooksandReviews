@@ -12,16 +12,6 @@ interface User {
   displayName: string;
   avatar?: string;
   bio?: string;
-  preferences: {
-    theme: 'light' | 'dark' | 'auto';
-    language: string;
-    notifications: {
-      email: boolean;
-      push: boolean;
-      newReviews: boolean;
-      likes: boolean;
-    };
-  };
 }
 
 interface SettingsFormProps {
@@ -32,33 +22,16 @@ export default function SettingsForm({ user }: SettingsFormProps) {
   const { updateUser: updateContextUser } = useAuth();
   const [formData, setFormData] = useState({
     displayName: user.displayName,
-    bio: user.bio || '',
-    theme: user.preferences.theme,
-    language: user.preferences.language,
-    notifications: user.preferences.notifications,
-    preferences: user.preferences
+    bio: user.bio || ''
   });
   const [loading, setLoading] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
   const [toastType, setToastType] = useState<'success' | 'error'>('success');
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    
-    if (type === 'checkbox') {
-      const checked = (e.target as HTMLInputElement).checked;
-      const [parent, child] = name.split('.');
-      setFormData(prev => ({
-        ...prev,
-        [parent]: {
-          ...(prev[parent as keyof typeof prev] as any),
-          [child]: checked
-        }
-      }));
-    } else {
-      setFormData(prev => ({ ...prev, [name]: value }));
-    }
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -68,19 +41,13 @@ export default function SettingsForm({ user }: SettingsFormProps) {
     try {
       await updateUser(user.id, {
         displayName: formData.displayName,
-        bio: formData.bio,
-        preferences: {
-          theme: formData.theme as 'light' | 'dark' | 'auto',
-          language: formData.language,
-          notifications: formData.notifications
-        }
+        bio: formData.bio
       });
 
       // Actualizar contexto
       updateContextUser({
         displayName: formData.displayName,
-        bio: formData.bio,
-        preferences: formData.preferences
+        bio: formData.bio
       });
 
       setToastMessage('Configuración actualizada exitosamente');
@@ -115,6 +82,7 @@ export default function SettingsForm({ user }: SettingsFormProps) {
                 onChange={handleInputChange}
                 className="w-full px-4 py-3 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-amber-900"
                 disabled={loading}
+                required
               />
             </div>
 
@@ -142,132 +110,11 @@ export default function SettingsForm({ user }: SettingsFormProps) {
               name="bio"
               value={formData.bio}
               onChange={handleInputChange}
-              rows={3}
+              rows={4}
               className="w-full px-4 py-3 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-amber-900"
-              placeholder="Cuéntanos sobre ti..."
+              placeholder="Cuéntanos sobre ti... Esta información se mostrará en tu perfil público."
               disabled={loading}
             />
-          </div>
-
-          {/* Preferencias */}
-          <div className="border-t border-amber-200 pt-6">
-            <h3 className="text-xl font-semibold text-amber-900 mb-4">Preferencias</h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <div>
-                <label htmlFor="theme" className="block text-sm font-medium text-amber-800 mb-2">
-                  Tema
-                </label>
-                <select
-                  id="theme"
-                  name="theme"
-                  value={formData.theme}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-amber-900"
-                  disabled={loading}
-                >
-                  <option value="light">Claro</option>
-                  <option value="dark">Oscuro</option>
-                  <option value="auto">Automático</option>
-                </select>
-              </div>
-
-              <div>
-                <label htmlFor="language" className="block text-sm font-medium text-amber-800 mb-2">
-                  Idioma
-                </label>
-                <select
-                  id="language"
-                  name="language"
-                  value={formData.language}
-                  onChange={handleInputChange}
-                  className="w-full px-4 py-3 border border-amber-300 rounded-lg focus:ring-2 focus:ring-amber-500 focus:border-amber-500 bg-white text-amber-900"
-                  disabled={loading}
-                >
-                  <option value="es">Español</option>
-                  <option value="en">English</option>
-                </select>
-              </div>
-            </div>
-          </div>
-
-          {/* Notificaciones */}
-          <div className="border-t border-amber-200 pt-6">
-            <h3 className="text-xl font-semibold text-amber-900 mb-4">Notificaciones</h3>
-            
-            <div className="space-y-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <label htmlFor="notifications.email" className="text-sm font-medium text-amber-800">
-                    Notificaciones por email
-                  </label>
-                  <p className="text-amber-600 text-sm">Recibir notificaciones importantes por email</p>
-                </div>
-                <input
-                  type="checkbox"
-                  id="notifications.email"
-                  name="notifications.email"
-                  checked={formData.notifications.email}
-                  onChange={handleInputChange}
-                  className="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500"
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <label htmlFor="notifications.push" className="text-sm font-medium text-amber-800">
-                    Notificaciones push
-                  </label>
-                  <p className="text-amber-600 text-sm">Recibir notificaciones en el navegador</p>
-                </div>
-                <input
-                  type="checkbox"
-                  id="notifications.push"
-                  name="notifications.push"
-                  checked={formData.notifications.push}
-                  onChange={handleInputChange}
-                  className="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500"
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <label htmlFor="notifications.newReviews" className="text-sm font-medium text-amber-800">
-                    Nuevas reseñas
-                  </label>
-                  <p className="text-amber-600 text-sm">Notificarme cuando alguien reseñe un libro que me interesa</p>
-                </div>
-                <input
-                  type="checkbox"
-                  id="notifications.newReviews"
-                  name="notifications.newReviews"
-                  checked={formData.notifications.newReviews}
-                  onChange={handleInputChange}
-                  className="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500"
-                  disabled={loading}
-                />
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div>
-                  <label htmlFor="notifications.likes" className="text-sm font-medium text-amber-800">
-                    Likes en mis reseñas
-                  </label>
-                  <p className="text-amber-600 text-sm">Notificarme cuando alguien le dé like a mis reseñas</p>
-                </div>
-                <input
-                  type="checkbox"
-                  id="notifications.likes"
-                  name="notifications.likes"
-                  checked={formData.notifications.likes}
-                  onChange={handleInputChange}
-                  className="w-5 h-5 text-amber-600 border-amber-300 rounded focus:ring-amber-500"
-                  disabled={loading}
-                />
-              </div>
-            </div>
           </div>
 
           {/* Botón de guardar */}

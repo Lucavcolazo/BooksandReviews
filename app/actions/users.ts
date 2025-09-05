@@ -1,7 +1,7 @@
 'use server'
 
 import { getDatabase } from '@/lib/mongodb';
-import { User, CreateUserData, UpdateUserData, UserStats } from '@/lib/models/User';
+import { User, CreateUserData, UpdateUserData } from '@/lib/models/User';
 import { hashPassword } from '@/lib/auth';
 import { ObjectId } from 'mongodb';
 
@@ -34,24 +34,7 @@ export async function createUser(data: CreateUserData): Promise<User> {
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
       isActive: true,
-      emailVerified: false,
-      preferences: {
-        theme: 'light',
-        language: 'es',
-        notifications: {
-          email: true,
-          push: true,
-          newReviews: true,
-          likes: true
-        }
-      },
-      stats: {
-        totalReviews: 0,
-        totalLikes: 0,
-        totalDislikes: 0,
-        booksRead: 0,
-        booksFavorited: 0
-      }
+      emailVerified: false
     };
 
     const result = await usersCollection.insertOne(newUser as User);
@@ -123,7 +106,6 @@ export async function updateUser(userId: string, data: UpdateUserData): Promise<
     if (data.displayName !== undefined) updateData.displayName = data.displayName;
     if (data.avatar !== undefined) updateData.avatar = data.avatar;
     if (data.bio !== undefined) updateData.bio = data.bio;
-    if (data.preferences !== undefined) updateData.preferences = data.preferences;
 
     const result = await usersCollection.findOneAndUpdate(
       { id: userId },
@@ -142,39 +124,6 @@ export async function updateUser(userId: string, data: UpdateUserData): Promise<
   }
 }
 
-// Actualizar estadísticas del usuario
-export async function updateUserStats(userId: string, stats: Partial<UserStats>): Promise<User> {
-  try {
-    const db = await getDatabase();
-    const usersCollection = db.collection<User>('users');
-    
-    const updateData: any = {
-      updatedAt: new Date().toISOString()
-    };
-
-    // Actualizar solo los campos de stats que se proporcionen
-    Object.keys(stats).forEach(key => {
-      if (stats[key as keyof UserStats] !== undefined) {
-        updateData[`stats.${key}`] = stats[key as keyof UserStats];
-      }
-    });
-
-    const result = await usersCollection.findOneAndUpdate(
-      { id: userId },
-      { $set: updateData },
-      { returnDocument: 'after' }
-    );
-
-    if (!result) {
-      throw new Error('Usuario no encontrado');
-    }
-
-    return result;
-  } catch (error) {
-    console.error('Error updating user stats:', error);
-    throw new Error('Error al actualizar las estadísticas del usuario');
-  }
-}
 
 // Eliminar usuario (soft delete)
 export async function deleteUser(userId: string): Promise<boolean> {
