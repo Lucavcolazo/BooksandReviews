@@ -31,6 +31,14 @@ export default clientPromise;
 
 // Función helper para obtener la base de datos
 export async function getDatabase(): Promise<Db> {
-  const client = await clientPromise;
-  return client.db('booksandreviews');
+  try {
+    const client = await clientPromise;
+    return client.db('booksandreviews');
+  } catch (error) {
+    console.warn('⚠️ Error conectando a MongoDB Atlas, usando modo desarrollo:', error);
+    
+    // Importar y usar la versión de desarrollo
+    const { getDatabase: getDevDatabase } = await import('./mongodb-dev');
+    return getDevDatabase();
+  }
 }
