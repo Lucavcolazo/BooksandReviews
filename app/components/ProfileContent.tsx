@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useAuth } from '@/lib/auth-context';
 import { logoutUser } from '@/app/actions/auth';
 import CompactNavbar from './CompactNavbar';
@@ -170,12 +171,12 @@ export default function ProfileContent({ user, reviews }: ProfileContentProps) {
           ) : (
             <div className="text-center py-12">
               <p className="text-slate-300 text-lg mb-4">Aún no has escrito reseñas</p>
-              <a 
+              <Link 
                 href="/?view=search" 
                 className="inline-block bg-slate-100/20 hover:bg-slate-100/30 text-slate-100 px-6 py-3 rounded-lg transition-colors backdrop-blur-sm border border-slate-200/30"
               >
                 Buscar libros para reseñar
-              </a>
+              </Link>
             </div>
           )}
         </div>

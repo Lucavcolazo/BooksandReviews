@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import BookCard from './BookCard';
 import BookChat from './BookChat';
 
@@ -133,12 +134,12 @@ export default function ExploreWithChat({ categories, recommendedBooks, userId }
                   >
                     Chatear con IA
                   </button>
-                  <a 
+                  <Link 
                     href="/?view=search" 
                     className="bg-slate-100/20 hover:bg-slate-100/30 text-slate-100 px-6 py-3 rounded-full transition-colors backdrop-blur-sm border border-slate-200/30"
                   >
                     Buscar Libros
-                  </a>
+                  </Link>
                 </div>
               </div>
             </div>

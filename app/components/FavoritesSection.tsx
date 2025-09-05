@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { getOrCreateFavoritesList, removeFromFavorites } from '../actions/booklists';
 import { BookList, BookListItem } from '@/lib/models/BookList';
 import Toast from './Toast';
@@ -114,12 +115,12 @@ export default function FavoritesSection({ userId }: FavoritesSectionProps) {
             </div>
             <h3 className="text-lg font-semibold text-slate-100 mb-2">No tienes favoritos aún</h3>
             <p className="text-slate-300 mb-4">Explora libros y agrega tus favoritos para verlos aquí</p>
-            <a
+            <Link
               href="/"
               className="inline-block bg-slate-100/20 hover:bg-slate-100/30 text-slate-100 px-6 py-2 rounded-lg transition-colors backdrop-blur-sm border border-slate-200/30"
             >
               Explorar Libros
-            </a>
+            </Link>
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

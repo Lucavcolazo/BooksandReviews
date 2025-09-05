@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import { getCurrentUser } from '../actions/auth';
 import { getAllReviews } from '../actions/reviews';
 import { getOrCreateFavoritesList } from '../actions/booklists';
@@ -112,12 +113,12 @@ export default async function LibrarySection() {
                     </svg>
                   </div>
                   <p className="text-slate-200 text-sm mb-4">Aún no hay reseñas</p>
-                  <a 
+                  <Link 
                     href="/?view=search" 
                     className="inline-block bg-slate-100/20 hover:bg-slate-100/30 text-slate-100 px-4 py-2 rounded-full text-sm transition-colors backdrop-blur-sm border border-slate-200/30"
                   >
                     Comenzar a Reseñar
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
