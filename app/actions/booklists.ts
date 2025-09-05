@@ -334,7 +334,10 @@ export async function getOrCreateFavoritesList(userId: string): Promise<BookList
       };
 
       const result = await bookListsCollection.insertOne(newFavoritesList as BookList);
-      favoritesList = { ...newFavoritesList, _id: result.insertedId } as BookList;
+      if (!result.insertedId) {
+        throw new Error('Error al crear la lista de favoritos');
+      }
+      favoritesList = { ...newFavoritesList, _id: result.insertedId } as BookList & { _id: ObjectId };
     }
     
     return serializeBookList(favoritesList);

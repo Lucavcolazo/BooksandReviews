@@ -16,8 +16,7 @@ export type {
 export type { 
   User, 
   CreateUserData, 
-  UpdateUserData, 
-  UserStats 
+  UpdateUserData
 } from '@/lib/models/User';
 export type { 
   Vote, 

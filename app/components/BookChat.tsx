@@ -5,7 +5,7 @@ import { getCurrentUser } from '../actions/auth';
 
 interface Message {
   id: string;
-  role: 'user' | 'assistant';
+  role: 'user' | 'assistant' | 'system';
   content: string;
   timestamp: Date;
 }
@@ -40,12 +40,12 @@ export default function BookChat({ isOpen, onClose }: BookChatProps) {
 
   const loadUserPreferences = async () => {
     try {
-      const user = await getCurrentUser();
-      if (user) {
+      const userResult = await getCurrentUser();
+      if (userResult.success && userResult.user) {
         // Aquí podrías cargar las preferencias del usuario desde la base de datos
         // Por ahora, usamos un objeto básico
         setUserPreferences({
-          userId: user.id,
+          userId: userResult.user.id,
           favoriteGenres: [],
           readBooks: [],
           ratings: []
