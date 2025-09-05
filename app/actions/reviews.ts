@@ -88,13 +88,16 @@ export async function getAllReviews(): Promise<Review[]> {
   }
 }
 
-// Obtener reseña por ID del libro
-export async function getReviewByBookId(bookId: string): Promise<Review | null> {
+// Obtener reseña por ID del libro y usuario
+export async function getReviewByBookId(bookId: string, userId?: string): Promise<Review | null> {
   try {
     const db = await getDatabase();
     const reviewsCollection = db.collection<Review>('reviews');
     
-    const review = await reviewsCollection.findOne({ bookId });
+    // Si se proporciona userId, buscar la reseña específica del usuario
+    // Si no, buscar cualquier reseña del libro (comportamiento anterior)
+    const query = userId ? { bookId, userId } : { bookId };
+    const review = await reviewsCollection.findOne(query);
     return review ? serializeReview(review) : null;
   } catch (error) {
     console.error('Error fetching review by book ID:', error);
