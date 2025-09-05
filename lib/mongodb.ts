@@ -1,10 +1,12 @@
 import { MongoClient, Db } from 'mongodb';
 
-if (!process.env.MONGODB_URI) {
-  throw new Error('Por favor, agrega tu MONGODB_URI a las variables de entorno');
+// Verificar MONGODB_URI solo cuando se necesite, no durante el build
+function getMongoUri(): string {
+  if (!process.env.MONGODB_URI) {
+    throw new Error('Por favor, agrega tu MONGODB_URI a las variables de entorno');
+  }
+  return process.env.MONGODB_URI;
 }
-
-const uri = process.env.MONGODB_URI;
 const options = {};
 
 let client: MongoClient;
@@ -17,13 +19,13 @@ if (process.env.NODE_ENV === 'development') {
   };
 
   if (!globalWithMongo._mongoClientPromise) {
-    client = new MongoClient(uri, options);
+    client = new MongoClient(getMongoUri(), options);
     globalWithMongo._mongoClientPromise = client.connect();
   }
   clientPromise = globalWithMongo._mongoClientPromise;
 } else {
   // En producción, crear una nueva instancia del cliente
-  client = new MongoClient(uri, options);
+  client = new MongoClient(getMongoUri(), options);
   clientPromise = client.connect();
 }
 
