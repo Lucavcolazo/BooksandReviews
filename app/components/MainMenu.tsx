@@ -34,6 +34,34 @@ export default async function MainMenu() {
             </div>
           </form>
         </div>
+
+        {/* AI Chat Section */}
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-slate-800/50 backdrop-blur-sm rounded-2xl p-6 border border-slate-700/50">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center">
+                <svg className="w-6 h-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+              <div>
+                <h3 className="text-lg font-semibold text-slate-100">Asistente IA</h3>
+                <p className="text-sm text-slate-400">Recomendaciones personalizadas</p>
+              </div>
+            </div>
+            <p className="text-slate-300 mb-4">
+              ¿No sabes qué leer? ¡Habla con nuestro asistente de IA! Cuéntale sobre tus gustos, 
+              géneros favoritos o el tipo de historias que te interesan, y recibe recomendaciones 
+              personalizadas de libros.
+            </p>
+            <div className="flex items-center gap-2 text-blue-400 text-sm">
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              <span>Haz clic en el botón de chat en la esquina inferior derecha</span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

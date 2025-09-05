@@ -6,6 +6,8 @@ import MainMenu from './components/MainMenu';
 import ExploreSection from './components/ExploreSection';
 import LibrarySection from './components/LibrarySection';
 import AuthButton from './components/AuthButton';
+import BookChat from './components/BookChat';
+import ChatButton from './components/ChatButton';
 
 async function getData(q: string | undefined) {
   const query = q?.trim() || '';
@@ -141,6 +143,9 @@ export default async function Home({ searchParams }: { searchParams: Promise<{ q
         {currentView === 'explore' && <ExploreSection />}
         {currentView === 'library' && <LibrarySection />}
       </main>
+      
+      {/* Chat Button - Fixed position */}
+      <ChatButton />
       
       <BookModal />
     </div>
