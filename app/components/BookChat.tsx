@@ -20,7 +20,7 @@ export default function BookChat({ isOpen, onClose }: BookChatProps) {
     {
       id: '1',
       role: 'assistant',
-      content: '¡Hola! Soy tu asistente de recomendaciones de libros. Cuéntame sobre tus gustos literarios, qué géneros te gustan, o qué tipo de historias te interesan. ¡Estoy aquí para ayudarte a encontrar tu próxima lectura perfecta! 📚',
+      content: '¡Hola! Soy tu asistente de recomendaciones de libros. Cuéntame sobre tus gustos literarios, qué géneros te gustan, o qué tipo de historias te interesan.',
       timestamp: new Date(),
     }
   ]);
@@ -28,11 +28,13 @@ export default function BookChat({ isOpen, onClose }: BookChatProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [userPreferences, setUserPreferences] = useState<any>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   // Cargar preferencias del usuario al abrir el chat
   useEffect(() => {
     if (isOpen) {
       loadUserPreferences();
+      focusInput(); // Enfocar el input cuando se abre el chat
     }
   }, [isOpen]);
 
@@ -58,6 +60,12 @@ export default function BookChat({ isOpen, onClose }: BookChatProps) {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  const focusInput = () => {
+    setTimeout(() => {
+      inputRef.current?.focus();
+    }, 100);
+  };
+
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
@@ -75,6 +83,7 @@ export default function BookChat({ isOpen, onClose }: BookChatProps) {
     setMessages(prev => [...prev, userMessage]);
     setInputMessage('');
     setIsLoading(true);
+    focusInput(); // Enfocar el input después de enviar
 
     try {
       const requestBody = {
@@ -125,6 +134,7 @@ export default function BookChat({ isOpen, onClose }: BookChatProps) {
       setMessages(prev => [...prev, errorMessage]);
     } finally {
       setIsLoading(false);
+      focusInput(); // Enfocar el input después de recibir respuesta
     }
   };
 
@@ -212,6 +222,7 @@ export default function BookChat({ isOpen, onClose }: BookChatProps) {
         <div className="p-6 border-t border-slate-700">
           <div className="flex gap-3">
             <textarea
+              ref={inputRef}
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
