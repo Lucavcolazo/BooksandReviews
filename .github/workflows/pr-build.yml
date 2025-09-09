@@ -1,0 +1,40 @@
+name: PR Build
+
+on:
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+        env:
+          # Variables dummy para el build (no se usan en runtime)
+          MONGODB_URI: mongodb://localhost:27017/dummy
+          JWT_SECRET: dummy-jwt-secret-for-build
+          OPENROUTER_API_KEY: dummy-api-key-for-build
+
+      - name: Verify build output
+        run: |
+          if [ ! -d ".next" ]; then
+            echo "❌ Build failed: .next directory not found"
+            exit 1
+          fi
+          echo "✅ Build completed successfully"
+
+
