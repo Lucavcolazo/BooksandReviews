@@ -22,7 +22,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 
 # Variables necesarias durante el build con valores dummy por defecto
 # Nota: En runtime, debes sobreescribirlas al ejecutar el contenedor
-ARG MONGODB_URI=dummy-mongodb-uri
+ARG MONGODB_URI=mongodb://localhost:27017/dummy
 ARG JWT_SECRET=dummy-jwt-secret
 ARG OPENROUTER_API_KEY=dummy-openrouter-key
 ENV MONGODB_URI=$MONGODB_URI
