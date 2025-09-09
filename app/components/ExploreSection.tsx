@@ -1,25 +1,10 @@
-import { getRecommendedBooks } from '../actions/books';
-import ExploreWithChat from './ExploreWithChat';
+import RecommendationsSlider from './RecommendationsSlider';
 
 export default async function ExploreSection() {
-  // Usar categorías por defecto para evitar problemas durante el build
-  const categories = [
-    'Fiction', 'Non-Fiction', 'Science Fiction', 'Fantasy', 'Mystery', 
-    'Romance', 'Thriller', 'Biography', 'History', 'Self-Help'
-  ];
-  
-  let recommendedBooks: any[] = [];
-  
-  // Obtener libros recomendados por defecto
-  try {
-    recommendedBooks = await getRecommendedBooks(categories.slice(0, 3), 12);
-  } catch (error) {
-    console.error('Error loading default recommendations:', error);
-  }
-
-  return <ExploreWithChat 
-    categories={categories} 
-    recommendedBooks={recommendedBooks} 
-    userId={undefined} 
-  />;
+  return (
+    <div className="max-w-6xl mx-auto px-4 py-10">
+      <h2 className="text-2xl md:text-3xl font-bold text-slate-100 mb-6">Descubrir</h2>
+      <RecommendationsSlider />
+    </div>
+  );
 }

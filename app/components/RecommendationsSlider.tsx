@@ -2,14 +2,9 @@
 
 import { useState, useEffect } from 'react';
 import { getRecommendedBooks } from '../actions/books';
-import { getFavoriteCategories } from '../actions/booklists';
 import { SimpleBook } from '../actions/books';
 
-interface RecommendationsSliderProps {
-  userId?: string;
-}
-
-export default function RecommendationsSlider({ userId }: RecommendationsSliderProps) {
+export default function RecommendationsSlider() {
   const [books, setBooks] = useState<SimpleBook[]>([]);
   const [loading, setLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -17,22 +12,15 @@ export default function RecommendationsSlider({ userId }: RecommendationsSliderP
 
   useEffect(() => {
     loadRecommendations();
-  }, [userId]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadRecommendations = async () => {
     try {
       setLoading(true);
       setError(null);
       
-      let categories: string[] = [];
-      
-      // Si hay un usuario, obtener sus categorías favoritas
-      if (userId) {
-        categories = await getFavoriteCategories(userId);
-      }
-      
-      // Obtener libros recomendados
-      const recommendedBooks = await getRecommendedBooks(categories, 12);
+      // Obtener un set genérico de libros (sin gustos ni likes)
+      const recommendedBooks = await getRecommendedBooks([], 12);
       setBooks(recommendedBooks);
     } catch (error) {
       console.error('Error loading recommendations:', error);
@@ -59,7 +47,7 @@ export default function RecommendationsSlider({ userId }: RecommendationsSliderP
     return (
       <div className="bg-slate-100/10 backdrop-blur-sm rounded-2xl border border-slate-200/20 p-8">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold text-slate-100">Libros Recomendados</h2>
+          <h2 className="text-2xl font-bold text-slate-100">Libros</h2>
         </div>
         <div className="flex gap-4 overflow-hidden">
           {[1, 2, 3, 4].map((i) => (
@@ -85,7 +73,7 @@ export default function RecommendationsSlider({ userId }: RecommendationsSliderP
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-slate-100 mb-2">Error al cargar recomendaciones</h3>
+          <h3 className="text-lg font-semibold text-slate-100 mb-2">Error al cargar libros</h3>
           <p className="text-slate-200 mb-4">{error}</p>
           <button
             onClick={loadRecommendations}
@@ -107,8 +95,8 @@ export default function RecommendationsSlider({ userId }: RecommendationsSliderP
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
             </svg>
           </div>
-          <h3 className="text-lg font-semibold text-slate-100 mb-2">No hay recomendaciones disponibles</h3>
-          <p className="text-slate-200">Agrega algunos libros a favoritos para obtener recomendaciones personalizadas</p>
+          <h3 className="text-lg font-semibold text-slate-100 mb-2">No hay libros disponibles</h3>
+          <p className="text-slate-200">Intenta buscar o vuelve a intentarlo más tarde</p>
         </div>
       </div>
     );
@@ -117,7 +105,7 @@ export default function RecommendationsSlider({ userId }: RecommendationsSliderP
   return (
     <div className="bg-slate-100/10 backdrop-blur-sm rounded-2xl border border-slate-200/20 p-8">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-slate-100">Libros Recomendados</h2>
+        <h2 className="text-2xl font-bold text-slate-100">Libros</h2>
         <div className="flex gap-2">
           <button
             onClick={prevSlide}
